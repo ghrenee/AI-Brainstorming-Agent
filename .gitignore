@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+claude.md
+
 # Distribution / packaging
 .Python
 build/
@@ -230,3 +232,4 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+frontend/package-lock.json

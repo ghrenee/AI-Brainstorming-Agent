@@ -148,7 +148,7 @@ The original Streamlit frontend is still available in `frontend/streamlit_app.py
 | **Renee Cannon**    | Strategist & Technical Lead | Architecture, integration, project direction |
 | **Mujib-ur-Rahman** | Backend & Data Engineer     | API logic, model orchestration, GCP setup    |
 | **Izwa Areeb**      | Frontend Engineer           | Streamlit interface, UI/UX flow              |
-
+| **Neelansh Khare**  | Frontend Engineer           | UI/UX                                        |
 
 ---
 

@@ -101,9 +101,9 @@ const Welcome = ({ session, updateSession, goToStep }) => {
       exit={{ opacity: 0 }}
     >
       <div className="welcome-content">
-        <GlowingOrb 
-          size={250} 
-          pulseSpeed={3}
+        <GlowingOrb
+          size={280}
+          pulseSpeed={2}
           showLabel={topic.length > 0}
           label={topic}
           className="welcome-orb"
