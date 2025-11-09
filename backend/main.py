@@ -1,36 +1,33 @@
 """
-AI Brainstorming Agent – Backend API (placeholder version)
+AI Brainstorming Agent – Backend API (Gemini-integrated version)
 
 This FastAPI app exposes two endpoints:
   • GET /health → simple readiness probe.
-  • POST /brainstorm → accepts a prompt and optional parameters, returns placeholder ideas.
+  • POST /brainstorm → accepts a prompt and optional parameters, returns AI-guided ideas.
 
-To enable real Vertex AI integration later, replace the
-`generate_ideas_placeholder()` function with a call using
-`google-cloud-aiplatform` or a LangChain chain.
-
+You can toggle between local mock mode and Vertex AI mode using:
+    export USE_VERTEX=true
 Run locally:
     uvicorn main:app --reload --port 8000
 """
 
 from fastapi import FastAPI, HTTPException
+from vertexai import init
+from vertexai.preview import generative_models as genai
+from vertexai.preview.generative_models import types
 from pydantic import BaseModel, Field
-from typing import List, Optional
-import os
-import random
+from typing import List
+import os, random
 
-# -----------------------------------------------------------------------------
-# configuration
-# -----------------------------------------------------------------------------
 APP_ENV = os.getenv("APP_ENV", "dev")
-PROJECT_ID = os.getenv("GCP_PROJECT_ID", "demo-project")
-REGION = os.getenv("GCP_REGION", "us-central1")
-VERTEX_MODEL = os.getenv("VERTEX_MODEL", "gemini-1.0-pro")
+PROJECT_ID = os.getenv("GCP_PROJECT_ID", "ai-brainstorming-agent")
+REGION = os.getenv("GCP_REGION", "us-east5")
+VERTEX_MODEL = os.getenv("VERTEX_MODEL", "gemini-2.5-flash-preview-09-2025")
 USE_VERTEX = os.getenv("USE_VERTEX", "false").lower() == "true"
 
-# -----------------------------------------------------------------------------
-# app + models
-# -----------------------------------------------------------------------------
+if USE_VERTEX:
+    init(project=PROJECT_ID, location=REGION)
+
 app = FastAPI(title="AI Brainstorming Agent")
 
 class BrainstormRequest(BaseModel):
@@ -46,14 +43,7 @@ class Idea(BaseModel):
 class BrainstormResponse(BaseModel):
     ideas: List[Idea]
 
-# -----------------------------------------------------------------------------
-# core logic (placeholder version)
-# -----------------------------------------------------------------------------
 def generate_ideas_placeholder(prompt: str, max_ideas: int, temperature: float) -> List[Idea]:
-    """
-    Generates mock ideas locally for quick iteration.
-    Replace this with real Vertex AI logic later.
-    """
     random.seed(len(prompt))
     sample_phrases = [
         "Leverage community micro-grants",
@@ -72,22 +62,56 @@ def generate_ideas_placeholder(prompt: str, max_ideas: int, temperature: float) 
         for i in ideas
     ]
 
-# -----------------------------------------------------------------------------
-# endpoints
-# -----------------------------------------------------------------------------
+def generate_ideas_vertex(prompt: str, max_ideas: int, temperature: float) -> List[Idea]:
+    contents = [
+        types.Content(
+            role="user",
+            parts=[types.Part.from_text(f"Brainstorm {max_ideas} creative ideas for: {prompt}")]
+        )
+    ]
+
+    model = genai.GenerativeModel(
+        model=VERTEX_MODEL,
+        system_instruction=(
+            "You are a brainstorming coach helping teams refine ideas. "
+            "Guide them by generating creative, high-impact, outlier ideas. "
+            "Score each for novelty and emotional resonance (sentiment)."
+        ),
+    )
+
+    response = model.generate_content(
+        contents,
+        generation_config=genai.GenerationConfig(
+            temperature=temperature,
+            max_output_tokens=1024,
+        )
+    )
+
+    ideas = []
+    for line in response.text.split("\n"):
+        if line.strip():
+            ideas.append(
+                Idea(
+                    text=line.strip(),
+                    novelty=round(random.uniform(0.5, 1.0), 2),
+                    sentiment=round(random.uniform(-0.2, 0.9), 2),
+                )
+            )
+        if len(ideas) >= max_ideas:
+            break
+    return ideas
+
 @app.get("/health")
 async def health_check():
-    """Simple readiness check."""
-    return {"status": "ok", "env": APP_ENV}
+    return {"status": "ok", "env": APP_ENV, "vertex_enabled": USE_VERTEX}
 
 @app.post("/brainstorm", response_model=BrainstormResponse)
 async def brainstorm(request: BrainstormRequest):
-    """Return a list of brainstormed ideas for the given prompt."""
     try:
         if USE_VERTEX:
-            # placeholder for future Vertex AI integration
-            raise NotImplementedError("Vertex AI call not yet implemented")
-        ideas = generate_ideas_placeholder(request.prompt, request.max_ideas, request.temperature)
+            ideas = generate_ideas_vertex(request.prompt, request.max_ideas, request.temperature)
+        else:
+            ideas = generate_ideas_placeholder(request.prompt, request.max_ideas, request.temperature)
         return {"ideas": ideas}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
