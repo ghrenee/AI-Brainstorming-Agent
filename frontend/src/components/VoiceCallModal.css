@@ -1,0 +1,210 @@
+.voice-call-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.voice-call-modal-card {
+  background: #ffffff;
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.modal-close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #333;
+  z-index: 10;
+}
+
+.modal-close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: rotate(90deg);
+}
+
+.modal-content {
+  padding: 2.5rem 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.modal-header-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.modal-avatar {
+  flex-shrink: 0;
+}
+
+.avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon {
+  display: none;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.5;
+  flex: 1;
+  padding-top: 0.25rem;
+}
+
+.start-call-button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+  margin-top: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  box-shadow: none;
+}
+
+.start-call-button:hover {
+  background: #1a1a1a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.start-call-button:active {
+  transform: translateY(0);
+}
+
+.call-icon {
+  font-size: 1.1rem;
+  transform: rotate(-45deg);
+  flex-shrink: 0;
+}
+
+.modal-footer {
+  padding: 1.5rem 2.5rem;
+  text-align: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.powered-by {
+  font-size: 0.85rem;
+  color: #999;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .voice-call-modal-card {
+    max-width: 90%;
+    border-radius: 1.25rem;
+  }
+
+  .modal-content {
+    padding: 2.5rem 1.5rem 1.5rem;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .modal-description {
+    font-size: 0.9rem;
+  }
+
+  .start-call-button {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .avatar-circle {
+    width: 70px;
+    height: 70px;
+  }
+
+  .avatar-icon {
+    font-size: 1.75rem;
+  }
+}
+
+/* Dark mode support (if needed) */
+@media (prefers-color-scheme: dark) {
+  .voice-call-modal-card {
+    background: #1a1a1a;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .modal-title {
+    color: #ffffff;
+  }
+
+  .modal-description {
+    color: #999;
+  }
+
+  .modal-close-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  .modal-close-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .modal-footer {
+    border-top-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .powered-by {
+    color: #666;
+  }
+}
+

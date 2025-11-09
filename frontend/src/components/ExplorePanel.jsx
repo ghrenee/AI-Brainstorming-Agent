@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { FiX, FiPlus } from 'react-icons/fi'
+import { FiX, FiPlus, FiMessageCircle } from 'react-icons/fi'
+import VoiceChat from './VoiceChat'
 import './ExplorePanel.css'
 
-const ExplorePanel = ({ idea, onClose, onAddSubIdea }) => {
+const ExplorePanel = ({ idea, onClose, onAddSubIdea, topic }) => {
   const [subIdeaText, setSubIdeaText] = useState('')
   const [showInput, setShowInput] = useState(false)
+  const [showVoiceChat, setShowVoiceChat] = useState(false)
 
   const branchingQuestions = [
     "What are the key components of this idea?",
@@ -41,9 +43,18 @@ const ExplorePanel = ({ idea, onClose, onAddSubIdea }) => {
       >
         <div className="panel-header">
           <h3 className="panel-title">Explore: {idea.text}</h3>
-          <button className="close-button" onClick={onClose}>
-            <FiX />
-          </button>
+          <div className="panel-header-actions">
+            <button
+              className="voice-chat-button"
+              onClick={() => setShowVoiceChat(true)}
+              title="Ask questions about this idea"
+            >
+              <FiMessageCircle /> Ask
+            </button>
+            <button className="close-button" onClick={onClose}>
+              <FiX />
+            </button>
+          </div>
         </div>
 
         <div className="panel-content">
@@ -135,6 +146,15 @@ const ExplorePanel = ({ idea, onClose, onAddSubIdea }) => {
             )}
           </div>
         </div>
+
+        {showVoiceChat && (
+          <VoiceChat
+            idea={idea}
+            topic={topic || ''}
+            embedded={true}
+            onClose={() => setShowVoiceChat(false)}
+          />
+        )}
       </motion.div>
     </motion.div>
   )

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FiPause, FiPlay, FiPlus, FiArrowRight } from 'react-icons/fi'
-import { FaThumbsUp, FaLightbulb, FaLaugh } from 'react-icons/fa'
+import { FiPause, FiPlay, FiPlus, FiArrowRight, FiMessageCircle } from 'react-icons/fi'
+import { FaThumbsUp, FaLightbulb, FaLaugh, FaVolumeUp } from 'react-icons/fa'
 import GlowingOrb from './GlowingOrb'
 import ExplorePanel from './ExplorePanel'
+import VoiceChat from './VoiceChat'
+import voiceService from '../services/voiceService'
 import axios from 'axios'
 import './IdeaBurst.css'
 
@@ -13,6 +15,8 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [selectedIdea, setSelectedIdea] = useState(null)
   const [showExplorePanel, setShowExplorePanel] = useState(false)
+  const [showVoiceChat, setShowVoiceChat] = useState(false)
+  const [chatIdea, setChatIdea] = useState(null)
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
 
@@ -21,7 +25,21 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
     if (ideas.length === 0) {
       generateIdeas()
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    // When ideas are generated, speak them
+    if (ideas.length > 0 && !isGenerating && session.topic) {
+      const announceIdeas = async () => {
+        try {
+          await voiceService.speak(`I've generated ${ideas.length} creative ideas for ${session.topic}. Click on any idea to explore it further, or I can read them to you.`)
+        } catch (error) {
+          console.error('Error playing voice:', error)
+        }
+      }
+      setTimeout(announceIdeas, 1000)
+    }
+  }, [ideas.length, isGenerating, session.topic])
 
   const generateIdeas = async () => {
     setIsGenerating(true)
@@ -87,10 +105,31 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
     }))
   }
 
-  const handleIdeaClick = (idea) => {
+  const handleIdeaClick = async (idea) => {
     setSelectedIdea(idea)
     setShowExplorePanel(true)
     updateSession({ selectedIdea: idea })
+    
+    // Speak the idea
+    try {
+      await voiceService.speakIdea(idea.text)
+    } catch (error) {
+      console.error('Error playing voice:', error)
+    }
+  }
+
+  const handleVoiceChat = (idea) => {
+    setChatIdea(idea)
+    setShowVoiceChat(true)
+  }
+
+  const handlePlayIdea = async (idea, e) => {
+    e.stopPropagation()
+    try {
+      await voiceService.speakIdea(idea.text)
+    } catch (error) {
+      console.error('Error playing voice:', error)
+    }
   }
 
   const handleReaction = (ideaId, reactionType, e) => {
@@ -166,6 +205,17 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
           >
             <FiArrowRight />
           </button>
+          <button
+            className="toolbar-button voice-chat-toggle"
+            onClick={() => {
+              if (ideas.length > 0) {
+                handleVoiceChat(ideas[0])
+              }
+            }}
+            title="Ask questions about ideas"
+          >
+            <FiMessageCircle />
+          </button>
         </div>
       </div>
 
@@ -197,7 +247,28 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
                 onClick={() => handleIdeaClick(idea)}
               >
                 <div className="tile-content">
-                  <div className="tile-text">{idea.text}</div>
+                  <div className="tile-header">
+                    <div className="tile-text">{idea.text}</div>
+                    <div className="tile-actions">
+                      <button
+                        className="play-idea-button"
+                        onClick={(e) => handlePlayIdea(idea, e)}
+                        title="Listen to idea"
+                      >
+                        <FaVolumeUp />
+                      </button>
+                      <button
+                        className="chat-idea-button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleVoiceChat(idea)
+                        }}
+                        title="Ask about this idea"
+                      >
+                        <FiMessageCircle />
+                      </button>
+                    </div>
+                  </div>
                   <div className="tile-meta">
                     <span className="novelty-badge">✨ {idea.novelty.toFixed(2)}</span>
                   </div>
@@ -246,11 +317,25 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
         {showExplorePanel && selectedIdea && (
           <ExplorePanel
             idea={selectedIdea}
+            topic={session.topic}
             onClose={() => {
               setShowExplorePanel(false)
               setSelectedIdea(null)
             }}
             onAddSubIdea={(subIdeaText) => addSubIdea(selectedIdea.id, subIdeaText)}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showVoiceChat && chatIdea && (
+          <VoiceChat
+            idea={chatIdea}
+            topic={session.topic}
+            onClose={() => {
+              setShowVoiceChat(false)
+              setChatIdea(null)
+            }}
           />
         )}
       </AnimatePresence>

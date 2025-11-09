@@ -19,6 +19,7 @@ Unlike typical “AI brainstorm generators” that pull from common web content,
 - 🎯 **Context Awareness:** Adapts to team goals, hackathon tracks, and user constraints.  
 - 💬 **Conversational Flow:** Feels like a creative partner, not a prompt-response tool.  
 - ⚙️ **Modular Design:** Deployable anywhere — API, UI, or integrated workflow.
+- 🎤 **Voice Integration:** ElevenLabs voice synthesis and browser speech recognition for natural interactions.
 
 > Think of it as a creativity accelerator — an *AI facilitator* that helps humans reach “what if?” faster.
 
@@ -33,6 +34,7 @@ AI-Brainstorming-Agent/
 
 - **Backend:** FastAPI app ready for Vertex AI or LangChain integration.  
 - **Frontend:** Modern React application with immersive UI, animations, and interactive brainstorming.  
+- **Voice:** ElevenLabs integration for natural voice output and browser speech recognition for voice input.
 - **Deployment:** Google Cloud Run for scalable demos.
 
 ---
@@ -42,6 +44,8 @@ AI-Brainstorming-Agent/
 |:------:|:------|:-------------|
 | `GET` | `/health` | Health check |
 | `POST` | `/brainstorm` | Generate a list of unconventional ideas for a given topic |
+| `POST` | `/ask-about-idea` | Answer questions about a specific idea (voice conversation) |
+| `POST` | `/conversation` | Handle conversational messages and extract topic/name information |
 
 ---
 
@@ -106,11 +110,17 @@ Frontend will be available at: `http://localhost:5173`
 
 ### Environment Variables
 
-Create a `.env` file in the `frontend` directory (optional):
+Create a `.env` file in the `frontend` directory:
 
 ```
 VITE_BACKEND_URL=http://localhost:8000
+VITE_ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+VITE_ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM
 ```
+
+**Note:** ElevenLabs API key is optional. If not provided, the app will use browser Text-to-Speech as fallback. For voice input, the app uses browser Speech Recognition API (works in Chrome, Edge, Safari).
+
+See [frontend/README_VOICE.md](./frontend/README_VOICE.md) for detailed voice setup instructions.
 
 ### Legacy Streamlit Frontend
 

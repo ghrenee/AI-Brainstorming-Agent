@@ -1,0 +1,51 @@
+.voice-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(139, 92, 246, 0.2);
+  border: 2px solid rgba(139, 92, 246, 0.4);
+  border-radius: 1rem;
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.voice-button:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.4);
+  border-color: var(--violet);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.voice-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.voice-button.listening {
+  background: rgba(0, 217, 255, 0.3);
+  border-color: var(--cyan);
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+  animation: pulse-voice 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-voice {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.8);
+  }
+}
+
+.voice-button-text {
+  font-size: 0.9rem;
+}
+
+.voice-button svg {
+  font-size: 1.2rem;
+}
+

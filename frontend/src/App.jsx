@@ -15,7 +15,8 @@ function App() {
     warmupAnswers: [],
     ideas: [],
     selectedIdea: null,
-    viewMode: 'mindmap' // mindmap, sticky, outline
+    viewMode: 'mindmap', // mindmap, sticky, outline
+    conversationHistory: [] // Voice conversation history
   })
 
   const updateSession = (updates) => {

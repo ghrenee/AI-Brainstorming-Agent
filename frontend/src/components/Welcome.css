@@ -107,6 +107,31 @@
   font-weight: 500;
 }
 
+.input-with-voice {
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.input-with-voice .glow-input {
+  flex: 1;
+}
+
+.input-voice-button {
+  padding: 0.5rem;
+  min-width: auto;
+  flex-shrink: 0;
+}
+
+.input-voice-button .voice-button-text {
+  display: none;
+}
+
+.input-voice-button svg {
+  font-size: 1rem;
+}
+
 .glow-button {
   padding: 1rem 2rem;
   background: linear-gradient(135deg, var(--violet), var(--cyan));
@@ -134,5 +159,72 @@
 .continue-button {
   margin-top: 1rem;
   width: 100%;
+}
+
+.voice-conversation-button {
+  width: 100%;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(0, 217, 255, 0.3));
+  border: 2px solid rgba(139, 92, 246, 0.5);
+  border-radius: 1.5rem;
+  color: var(--white);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.3);
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.voice-conversation-button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: shimmer 3s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.voice-conversation-button:hover {
+  border-color: var(--cyan);
+  box-shadow: 0 12px 40px rgba(0, 217, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.voice-conversation-button svg {
+  font-size: 2.5rem;
+  color: var(--cyan);
+  filter: drop-shadow(0 0 10px rgba(0, 217, 255, 0.5));
+}
+
+.voice-conversation-button span:first-of-type {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.button-subtitle {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--gray-light);
+  opacity: 0.9;
 }
 

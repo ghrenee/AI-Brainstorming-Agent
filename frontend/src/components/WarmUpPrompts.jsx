@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import GlowingOrb from './GlowingOrb'
+import VoiceButton from './VoiceButton'
+import voiceService from '../services/voiceService'
 import './WarmUpPrompts.css'
 
 const warmupQuestions = [
@@ -15,23 +17,64 @@ const WarmUpPrompts = ({ session, updateSession, goToStep }) => {
   const [answers, setAnswers] = useState(session.warmupAnswers || [])
   const [selectedCard, setSelectedCard] = useState(null)
   const [inputValue, setInputValue] = useState('')
+  const [voicePlayed, setVoicePlayed] = useState(false)
+
+  useEffect(() => {
+    // Play welcome voice for warm-up section
+    if (!voicePlayed) {
+      const playWelcome = async () => {
+        try {
+          await voiceService.speak("Let's warm up your creativity with some playful questions. Click on any question to answer it, or I can read them to you.")
+          setVoicePlayed(true)
+        } catch (error) {
+          console.error('Error playing voice:', error)
+        }
+      }
+      setTimeout(playWelcome, 500)
+    }
+  }, [voicePlayed])
+
+  const handleQuestionClick = async (question, index) => {
+    handleCardClick(index)
+    // Speak the question
+    try {
+      await voiceService.speakQuestion(question)
+    } catch (error) {
+      console.error('Error playing question:', error)
+    }
+  }
 
   const handleCardClick = (index) => {
     setSelectedCard(selectedCard === index ? null : index)
     setInputValue(answers[index] || '')
   }
 
-  const handleAnswerSubmit = (index) => {
+  const handleAnswerSubmit = async (index) => {
     const newAnswers = [...answers]
     newAnswers[index] = inputValue
     setAnswers(newAnswers)
     updateSession({ warmupAnswers: newAnswers })
     setSelectedCard(null)
     setInputValue('')
+    
+    // Play confirmation
+    try {
+      await voiceService.speak("Great answer! Let's continue with the next question.")
+    } catch (error) {
+      console.error('Error playing voice:', error)
+    }
   }
 
-  const handleContinue = () => {
-    goToStep('ideaburst')
+  const handleContinue = async () => {
+    // Play transition voice
+    try {
+      await voiceService.speak("Excellent! Now let's generate some creative ideas for your topic.")
+    } catch (error) {
+      console.error('Error playing voice:', error)
+    }
+    setTimeout(() => {
+      goToStep('ideaburst')
+    }, 2000)
   }
 
   const answeredCount = answers.filter(a => a && a.trim()).length
@@ -49,7 +92,7 @@ const WarmUpPrompts = ({ session, updateSession, goToStep }) => {
         <p className="warmup-subtitle">Answer a few playful questions to get started</p>
       </div>
 
-      <div className="warmup-cards">
+            <div className="warmup-cards">
         {warmupQuestions.map((question, index) => (
           <motion.div
             key={index}
@@ -59,7 +102,7 @@ const WarmUpPrompts = ({ session, updateSession, goToStep }) => {
             transition={{ delay: index * 0.1 }}
             whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => handleCardClick(index)}
+            onClick={() => handleQuestionClick(question, index)}
           >
             <div className="card-content">
               <div className="card-number">{index + 1}</div>
@@ -88,16 +131,12 @@ const WarmUpPrompts = ({ session, updateSession, goToStep }) => {
                     autoFocus
                   />
                   <div className="card-actions">
-                    <button
-                      className="voice-button"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        // Placeholder for voice input
-                        alert('Voice input coming soon!')
+                    <VoiceButton
+                      onTranscript={(transcript) => {
+                        setInputValue(transcript.trim())
                       }}
-                    >
-                      🎤 Voice
-                    </button>
+                      className="card-voice-button"
+                    />
                     <button
                       className="submit-button"
                       onClick={(e) => {

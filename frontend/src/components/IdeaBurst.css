@@ -110,12 +110,63 @@
   height: 100%;
 }
 
+.tile-header {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
 .tile-text {
   font-size: 0.95rem;
   line-height: 1.5;
   color: var(--white);
   font-weight: 500;
   flex: 1;
+}
+
+.tile-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.play-idea-button,
+.chat-idea-button {
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 217, 255, 0.2);
+  border: 1px solid rgba(0, 217, 255, 0.4);
+  border-radius: 0.5rem;
+  color: var(--cyan);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-idea-button {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: var(--violet);
+}
+
+.play-idea-button:hover {
+  background: rgba(0, 217, 255, 0.4);
+  border-color: var(--cyan);
+  transform: scale(1.1);
+}
+
+.chat-idea-button:hover {
+  background: rgba(139, 92, 246, 0.4);
+  border-color: var(--violet);
+  transform: scale(1.1);
+}
+
+.voice-chat-toggle {
+  background: rgba(139, 92, 246, 0.3) !important;
+  border-color: rgba(139, 92, 246, 0.5) !important;
 }
 
 .tile-meta {
