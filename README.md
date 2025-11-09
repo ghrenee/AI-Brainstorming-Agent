@@ -46,7 +46,7 @@ AI-Brainstorming-Agent/
 ---
 
 ## ⚙️ Local Setup
-```bash
+
 # backend
 cd backend
 pip install -r requirements.txt
@@ -72,12 +72,12 @@ UI: http://localhost:8501
 ---
 
 ## 👥 Team
+| Name                | Role                        | Focus                                        |
+| ------------------- | --------------------------- | -------------------------------------------- |
+| **Renee Cannon**    | Strategist & Technical Lead | Architecture, integration, project direction |
+| **Mujib-ur-Rahman** | Backend & Data Engineer     | API logic, model orchestration, GCP setup    |
+| **Izwa Areeb**      | Frontend Engineer           | Streamlit interface, UI/UX flow              |
 
-| Name | Role | Focus |
-|------|------|--------|
-| **Renee Cannon** | Strategist & Technical Lead | Architecture, integration, project direction |
-| **Mujib-ur-Rahman** | Backend & Data Engineer | API logic, model orchestration, GCP setup |
-| **Izwa Areeb** | Frontend Engineer | Streamlit interface, UI/UX flow |
 
 ---
 
@@ -92,9 +92,10 @@ Our goal: help teams uncover **unexpected solutions** in record time.
 ## 🏁 Hackathon Goal
 
 Deliver a working MVP that demonstrates:
-- Interactive brainstorming flow  
-- Novelty scoring and branching suggestions  
-- Seamless local or GCP deployment  
+
+- **Interactive brainstorming flow**  
+- **Novelty scoring and branching suggestions**  
+- **Seamless local or GCP deployment**
 
 ---
 
@@ -102,3 +103,5 @@ Deliver a working MVP that demonstrates:
 
 This project is licensed under the **Apache License 2.0** — see the [`LICENSE`](./LICENSE) file for details.  
 You are free to use, modify, and distribute this project as long as proper attribution is maintained.
+
+---
