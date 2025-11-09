@@ -1,3 +1,15 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-east5-docker.pkg.dev/$PROJECT_ID/brainstorming-agent/follow-the-spark', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-east5-docker.pkg.dev/$PROJECT_ID/brainstorming-agent/follow-the-spark']
+
+images:
+  - 'us-east5-docker.pkg.dev/$PROJECT_ID/brainstorming-agent/follow-the-spark'
+
 steps:
   # Step 1: Build container image
   - name: 'gcr.io/cloud-builders/docker'
