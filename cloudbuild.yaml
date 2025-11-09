@@ -1,0 +1,24 @@
+steps:
+  # Step 1: Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-east5-docker.pkg.dev/$PROJECT_ID/brainstorming-agent/follow-the-spark', '.']
+
+  # Step 2: Push to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-east5-docker.pkg.dev/$PROJECT_ID/brainstorming-agent/follow-the-spark']
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run', 'deploy', 'follow-the-spark-agent',
+        '--image', 'us-east5-docker.pkg.dev/$PROJECT_ID/brainstorming-agent/follow-the-spark',
+        '--region', 'us-east5',
+        '--platform', 'managed',
+        '--allow-unauthenticated',
+        '--memory', '1Gi'
+      ]
+
+images:
+  - 'us-east5-docker.pkg.dev/$PROJECT_ID/brainstorming-agent/follow-the-spark'
