@@ -51,6 +51,21 @@ AI-Brainstorming-Agent/
 
 ## ⚙️ Local Setup
 
+### Environment Variables
+
+Create a `.env` file in the `frontend` directory:
+
+```
+VITE_BACKEND_URL=http://localhost:8000
+VITE_ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+VITE_ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM
+```
+
+**Note:** ElevenLabs API key is optional. If not provided, the app will use browser Text-to-Speech as fallback. For voice input, the app uses browser Speech Recognition API (works in Chrome, Edge, Safari).
+
+See [frontend/README_VOICE.md](./frontend/README_VOICE.md) for detailed voice setup instructions.
+
+
 ### 🚀 Quick Start (Recommended)
 
 **Windows:**
@@ -107,20 +122,6 @@ npm run dev
 Frontend will be available at: `http://localhost:5173`
 
 **Note:** Make sure the backend is running before starting the frontend, as the frontend needs to connect to the API.
-
-### Environment Variables
-
-Create a `.env` file in the `frontend` directory:
-
-```
-VITE_BACKEND_URL=http://localhost:8000
-VITE_ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
-VITE_ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM
-```
-
-**Note:** ElevenLabs API key is optional. If not provided, the app will use browser Text-to-Speech as fallback. For voice input, the app uses browser Speech Recognition API (works in Chrome, Edge, Safari).
-
-See [frontend/README_VOICE.md](./frontend/README_VOICE.md) for detailed voice setup instructions.
 
 ### Legacy Streamlit Frontend
 
