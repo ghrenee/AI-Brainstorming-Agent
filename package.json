@@ -1,0 +1,22 @@
+{
+  "name": "ai-brainstorming-agent",
+  "version": "1.0.0",
+  "description": "AI Brainstorming Agent - Modern web app for creative ideation",
+  "scripts": {
+    "start": "python start_system.py",
+    "start:backend": "cd backend && python -m uvicorn main:app --reload --port 8000",
+    "start:frontend": "cd frontend && npm run dev",
+    "setup": "npm run setup:backend && npm run setup:frontend",
+    "setup:backend": "cd backend && python -m venv venv && venv/bin/pip install -r requirements.txt || venv/Scripts/pip install -r requirements.txt",
+    "setup:frontend": "cd frontend && npm install"
+  },
+  "keywords": [
+    "ai",
+    "brainstorming",
+    "ideation",
+    "creativity"
+  ],
+  "author": "",
+  "license": "Apache-2.0"
+}
+
