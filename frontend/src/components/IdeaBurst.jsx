@@ -5,6 +5,7 @@ import { FaThumbsUp, FaLightbulb, FaLaugh, FaVolumeUp } from 'react-icons/fa'
 import GlowingOrb from './GlowingOrb'
 import ExplorePanel from './ExplorePanel'
 import VoiceChat from './VoiceChat'
+import SkeletonLoader from './SkeletonLoader'
 import voiceService from '../services/voiceService'
 import axios from 'axios'
 import './IdeaBurst.css'
@@ -220,7 +221,7 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
       </div>
 
       <div className="orb-container-wrapper">
-        <GlowingOrb size={220} pulseSpeed={isPaused ? 0 : 3} />
+        <GlowingOrb size={240} pulseSpeed={isPaused ? 0 : 2} />
         
         <div className="ideas-orbit">
           {ideas.map((idea, index) => {
@@ -237,10 +238,10 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
                   y: position.y,
                 }}
                 transition={{
-                  x: { type: "spring", stiffness: 100, damping: 15 },
-                  y: { type: "spring", stiffness: 100, damping: 15 },
-                  opacity: { duration: 0.5, delay: index * 0.1 },
-                  scale: { duration: 0.5, delay: index * 0.1 }
+                  x: { type: "spring", stiffness: 260, damping: 20 },
+                  y: { type: "spring", stiffness: 260, damping: 20 },
+                  opacity: { duration: 0.3, delay: index * 0.05 },
+                  scale: { duration: 0.3, delay: index * 0.05 }
                 }}
                 whileHover={{ scale: 1.1, zIndex: 10 }}
                 whileTap={{ scale: 0.95 }}
@@ -301,14 +302,13 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
           })}
         </div>
 
-        {isGenerating && (
+        {isGenerating && ideas.length === 0 && (
           <motion.div
             className="generating-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="generating-spinner"></div>
-            <p>Generating ideas...</p>
+            <SkeletonLoader type="orbit" />
           </motion.div>
         )}
       </div>

@@ -1,7 +1,7 @@
 .ideaburst-container {
   width: 100%;
   min-height: 100vh;
-  padding: 2rem;
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -12,8 +12,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-md);
   z-index: 10;
+  background: rgba(26, 31, 58, 0.4);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
 }
 
 .burst-title {
@@ -33,23 +39,25 @@
 .toolbar-button {
   width: 3rem;
   height: 3rem;
-  border-radius: 50%;
-  background: rgba(26, 31, 58, 0.8);
-  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: var(--radius-full);
+  background: rgba(26, 31, 58, 0.9);
+  border: 2px solid rgba(139, 92, 246, 0.4);
   color: var(--white);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  transition: all var(--transition-base);
+  backdrop-filter: blur(15px);
   font-size: 1.2rem;
+  box-shadow: var(--shadow-md);
 }
 
 .toolbar-button:hover:not(:disabled) {
   border-color: var(--cyan);
-  box-shadow: 0 4px 20px rgba(0, 217, 255, 0.4);
-  transform: scale(1.1);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px) scale(1.05);
+  background: rgba(26, 31, 58, 0.95);
 }
 
 .toolbar-button:disabled {
@@ -79,27 +87,48 @@
 
 .idea-tile {
   position: absolute;
-  width: 200px;
-  min-height: 120px;
-  background: rgba(26, 31, 58, 0.9);
-  border: 2px solid rgba(139, 92, 246, 0.4);
-  border-radius: 1rem;
-  padding: 1rem;
+  width: 220px;
+  min-height: 140px;
+  background: linear-gradient(135deg, rgba(26, 31, 58, 0.95), rgba(26, 31, 58, 0.85));
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
   cursor: pointer;
-  backdrop-filter: blur(15px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all var(--transition-base);
   left: 50%;
   top: 50%;
-  margin-left: -100px;
-  margin-top: -60px;
+  margin-left: -110px;
+  margin-top: -70px;
+}
+
+.idea-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.3), rgba(139, 92, 246, 0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.idea-tile:hover::before {
+  opacity: 1;
 }
 
 .idea-tile:hover {
-  border-color: var(--cyan);
-  box-shadow: 
-    0 12px 40px rgba(0, 217, 255, 0.4),
-    0 0 30px rgba(139, 92, 246, 0.3);
+  border-color: rgba(0, 217, 255, 0.6);
+  box-shadow:
+    var(--shadow-xl),
+    0 0 40px rgba(0, 217, 255, 0.3),
+    0 0 60px rgba(139, 92, 246, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
   z-index: 100;
 }
 
@@ -244,5 +273,94 @@
 .generating-overlay p {
   color: var(--gray-light);
   font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .ideaburst-container {
+    padding: var(--spacing-md);
+  }
+
+  .ideaburst-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    align-items: stretch;
+  }
+
+  .burst-title {
+    font-size: var(--text-2xl);
+    text-align: center;
+  }
+
+  .toolbar {
+    justify-content: center;
+  }
+
+  .orb-container-wrapper {
+    min-height: 500px;
+  }
+
+  .idea-tile {
+    width: 180px;
+    min-height: 120px;
+    margin-left: -90px;
+    margin-top: -60px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .ideaburst-container {
+    padding: var(--spacing-sm);
+  }
+
+  .burst-title {
+    font-size: var(--text-xl);
+  }
+
+  .toolbar-button {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+  }
+
+  .orb-container-wrapper {
+    min-height: 450px;
+  }
+
+  .idea-tile {
+    width: 160px;
+    min-height: 100px;
+    margin-left: -80px;
+    margin-top: -50px;
+    padding: var(--spacing-sm);
+  }
+
+  .tile-text {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .toolbar {
+    gap: 0.5rem;
+  }
+
+  .toolbar-button {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.9rem;
+  }
+
+  .idea-tile {
+    width: 140px;
+    min-height: 90px;
+    margin-left: -70px;
+    margin-top: -45px;
+  }
+
+  .orb-container-wrapper {
+    min-height: 400px;
+  }
 }
 
