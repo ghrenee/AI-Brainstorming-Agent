@@ -6,6 +6,8 @@ import GlowingOrb from './GlowingOrb'
 import ExplorePanel from './ExplorePanel'
 import VoiceChat from './VoiceChat'
 import SkeletonLoader from './SkeletonLoader'
+import Timer from './Timer'
+import TechniqueChip from './TechniqueChip'
 import voiceService from '../services/voiceService'
 import axios from 'axios'
 import './IdeaBurst.css'
@@ -18,8 +20,21 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
   const [showExplorePanel, setShowExplorePanel] = useState(false)
   const [showVoiceChat, setShowVoiceChat] = useState(false)
   const [chatIdea, setChatIdea] = useState(null)
+  const [mode, setMode] = useState('untimed') // 'untimed', 'lightning', or 'deep_dive'
+  const [personality, setPersonality] = useState('balanced') // Personality for technique selection
+  const [technique, setTechnique] = useState(null)
+  const [techniqueDescription, setTechniqueDescription] = useState(null)
+  const [phaseEndTime, setPhaseEndTime] = useState(null)
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
+
+  const personalityOptions = [
+    { value: 'high_energy', label: '⚡ Metaphor Remix', emoji: '⚡' },
+    { value: 'analytical', label: '🔧 SCAMPER', emoji: '🔧' },
+    { value: 'contrarian', label: '🔄 Reverse Storming', emoji: '🔄' },
+    { value: 'empathetic', label: '👥 Role Storming', emoji: '👥' },
+    { value: 'balanced', label: '🎯 Morphological Mix', emoji: '🎯' }
+  ]
 
   useEffect(() => {
     // Generate initial ideas
@@ -27,6 +42,28 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
       generateIdeas()
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    // Update technique when personality changes
+    if (personality) {
+      const personalityToTechnique = {
+        high_energy: 'Metaphor Remix',
+        analytical: 'SCAMPER',
+        contrarian: 'Reverse Storming',
+        empathetic: 'Role Storming',
+        balanced: 'Morphological Mix'
+      }
+      const techniqueDescriptions = {
+        high_energy: 'Encourages lateral thinking by reframing the challenge through vivid analogies and playful comparisons.',
+        analytical: 'Applies structured creativity—Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse.',
+        contrarian: 'Flips assumptions to discover opportunities hidden in problems or constraints.',
+        empathetic: 'Ideate through another person\'s perspective or stakeholder lens.',
+        balanced: 'Combines fragments from multiple concepts into novel hybrids.'
+      }
+      setTechnique(personalityToTechnique[personality])
+      setTechniqueDescription(techniqueDescriptions[personality])
+    }
+  }, [personality])
 
   useEffect(() => {
     // When ideas are generated, speak them
@@ -47,13 +84,15 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
     try {
       // Mock ideas for now (replace with API call later)
       const mockIdeas = generateMockIdeas(session.topic, 8)
-      
+
       // If backend is available, try to use it
       try {
         const response = await axios.post(`${BACKEND_URL}/brainstorm`, {
           prompt: session.topic,
           max_ideas: 8,
-          temperature: 0.8
+          temperature: 0.8,
+          mode: mode,
+          personality: personality
         })
         if (response.data && response.data.ideas) {
           const formattedIdeas = response.data.ideas.map((idea, index) => ({
@@ -67,8 +106,18 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
           }))
           setIdeas(formattedIdeas)
           updateSession({ ideas: formattedIdeas })
+
+          // Set technique and timer info from response
+          if (response.data.chosen_technique) {
+            setTechnique(response.data.chosen_technique)
+            setTechniqueDescription(response.data.technique_description)
+          }
+          if (response.data.phase_end_at) {
+            setPhaseEndTime(response.data.phase_end_at)
+          }
         }
       } catch (error) {
+        console.log('Backend unavailable, using mock data')
         // Fallback to mock ideas
         setIdeas(mockIdeas)
         updateSession({ ideas: mockIdeas })
@@ -179,44 +228,155 @@ const IdeaBurst = ({ session, updateSession, goToStep }) => {
     return { x, y, angle }
   }
 
+  const handleTimerComplete = async () => {
+    await voiceService.speak("Time's up! Let's review what we've brainstormed.")
+    setIsPaused(true)
+  }
+
+  const handleExtendTime = () => {
+    if (phaseEndTime) {
+      const extended = new Date(new Date(phaseEndTime).getTime() + 30000).toISOString()
+      setPhaseEndTime(extended)
+      voiceService.speak("Added 30 more seconds. Let's keep the ideas flowing!")
+    }
+  }
+
+  const handleModeChange = (newMode) => {
+    setMode(newMode)
+    const modeNames = {
+      untimed: 'Untimed',
+      lightning: 'Lightning Round',
+      deep_dive: 'Deep Dive'
+    }
+    
+    // Set phase end time for timed modes
+    if (newMode === 'lightning') {
+      const endTime = new Date(Date.now() + 90 * 1000).toISOString()
+      setPhaseEndTime(endTime)
+    } else if (newMode === 'deep_dive') {
+      const endTime = new Date(Date.now() + 180 * 1000).toISOString()
+      setPhaseEndTime(endTime)
+    } else {
+      // Clear timer for untimed mode
+      setPhaseEndTime(null)
+    }
+    
+    voiceService.speak(`Switched to ${modeNames[newMode]} mode`)
+  }
+
   return (
     <div className="ideaburst-container">
       <div className="ideaburst-header">
-        <h2 className="burst-title">{session.topic}</h2>
-        <div className="toolbar">
-          <button
-            className="toolbar-button"
-            onClick={() => setIsPaused(!isPaused)}
-            title={isPaused ? 'Resume' : 'Pause'}
-          >
-            {isPaused ? <FiPlay /> : <FiPause />}
-          </button>
-          <button
-            className="toolbar-button"
-            onClick={generateIdeas}
-            disabled={isGenerating}
-            title="Generate More Ideas"
-          >
-            <FiPlus />
-          </button>
-          <button
-            className="toolbar-button"
-            onClick={() => goToStep('organize')}
-            title="Organize & Export"
-          >
-            <FiArrowRight />
-          </button>
-          <button
-            className="toolbar-button voice-chat-toggle"
-            onClick={() => {
-              if (ideas.length > 0) {
-                handleVoiceChat(ideas[0])
-              }
-            }}
-            title="Ask questions about ideas"
-          >
-            <FiMessageCircle />
-          </button>
+        <div className="header-top">
+          <div className="header-left">
+            <div className="header-left-content">
+              <h2 className="burst-title">{session.topic}</h2>
+              {session.userName && (
+                <div className="username-display">Brainstorming with {session.userName}</div>
+              )}
+            </div>
+
+            {/* Brainstorm Controls - Aligned at Bottom */}
+            <div className="toolbar">
+              <button
+                className="toolbar-button"
+                onClick={() => setIsPaused(!isPaused)}
+                title={isPaused ? 'Resume' : 'Pause'}
+              >
+                {isPaused ? <FiPlay /> : <FiPause />}
+              </button>
+              <button
+                className="toolbar-button"
+                onClick={generateIdeas}
+                disabled={isGenerating}
+                title="Generate More Ideas"
+              >
+                <FiPlus />
+              </button>
+              <button
+                className="toolbar-button"
+                onClick={() => goToStep('organize')}
+                title="Organize & Export"
+              >
+                <FiArrowRight />
+              </button>
+              <button
+                className="toolbar-button voice-chat-toggle"
+                onClick={() => {
+                  if (ideas.length > 0) {
+                    handleVoiceChat(ideas[0])
+                  }
+                }}
+                title="Ask questions about ideas"
+              >
+                <FiMessageCircle />
+              </button>
+            </div>
+          </div>
+
+          <div className="header-right">
+            <div className="header-controls">
+              {/* Mode Toggle */}
+              <div className="mode-toggle-group">
+                <button
+                  className={`mode-toggle-btn ${mode === 'untimed' ? 'active' : ''}`}
+                  onClick={() => handleModeChange('untimed')}
+                >
+                  Untimed ∞
+                </button>
+                <button
+                  className={`mode-toggle-btn ${mode === 'lightning' ? 'active' : ''}`}
+                  onClick={() => handleModeChange('lightning')}
+                >
+                  Lightning ⚡ (90s)
+                </button>
+                <button
+                  className={`mode-toggle-btn ${mode === 'deep_dive' ? 'active' : ''}`}
+                  onClick={() => handleModeChange('deep_dive')}
+                >
+                  Deep Dive 🌊 (3m)
+                </button>
+              </div>
+
+              {/* Personality Selector */}
+              <div className="personality-selector">
+                <label htmlFor="personality-select" className="personality-label">
+                  Technique:
+                </label>
+                <select
+                  id="personality-select"
+                  value={personality}
+                  onChange={(e) => setPersonality(e.target.value)}
+                  className="personality-dropdown"
+                >
+                  {personalityOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Timer and Technique - Aligned Right */}
+            <div className="timer-technique-row">
+              {phaseEndTime && (
+                <Timer
+                  endTime={phaseEndTime}
+                  mode={mode}
+                  onComplete={handleTimerComplete}
+                  onExtend={handleExtendTime}
+                />
+              )}
+
+              {technique && (
+                <TechniqueChip
+                  technique={technique}
+                  description={techniqueDescription}
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
