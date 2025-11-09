@@ -17,7 +17,17 @@ from vertexai.preview import generative_models as genai
 from vertexai.preview.generative_models import types
 from pydantic import BaseModel, Field
 from typing import List
-import os, random
+from vertexai.preview import generative_models as genai
+import os
+
+SYSTEM_INSTRUCTION_PATH = os.path.join(
+    os.path.dirname(__file__), "prompts", "gemini_system_instruction.txt"
+)
+
+model = genai.GenerativeModel(
+    model="gemini-2.5-flash-preview-09-2025",
+    system_instruction=open(SYSTEM_INSTRUCTION_PATH).read()
+)
 
 APP_ENV = os.getenv("APP_ENV", "dev")
 PROJECT_ID = os.getenv("GCP_PROJECT_ID", "ai-brainstorming-agent")
