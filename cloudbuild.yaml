@@ -1,9 +1,9 @@
 steps:
-  # Step 1: Build the container image
+  # Step 1: Build container image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-east5-docker.pkg.dev/$PROJECT_ID/brainstorming-agent/follow-the-spark', '.']
 
-  # Step 2: Push to Artifact Registry
+  # Step 2: Push image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-east5-docker.pkg.dev/$PROJECT_ID/brainstorming-agent/follow-the-spark']
 
