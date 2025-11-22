@@ -1,0 +1,118 @@
+.technique-chip {
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 0.5rem 0.875rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  margin: 0;
+}
+
+.technique-chip-header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.technique-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 255, 255, 0.3);
+}
+
+.technique-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+}
+
+.technique-label {
+  font-size: 0.625rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.technique-name {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.technique-description {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+
+/* Hover effect */
+.technique-chip:hover {
+  border-color: rgba(0, 255, 255, 0.4);
+  box-shadow: 0 12px 40px rgba(0, 255, 255, 0.2);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .technique-chip {
+    padding: 0.875rem 1.25rem;
+    max-width: 100%;
+  }
+
+  .technique-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.125rem;
+  }
+
+  .technique-name {
+    font-size: 1rem;
+  }
+
+  .technique-description {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Animation */
+@keyframes technique-glow {
+  0%, 100% {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(0, 255, 255, 0.3);
+  }
+}
+
+.technique-chip {
+  animation: technique-glow 3s ease-in-out infinite;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .technique-chip {
+    animation: none;
+  }
+
+  .technique-chip:hover {
+    transform: none;
+  }
+}

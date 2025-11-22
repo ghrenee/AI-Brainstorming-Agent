@@ -20,6 +20,8 @@ from typing import List, Optional
 import os
 import random
 import re
+from datetime import datetime, timedelta
+from utils.techniques import suggest_technique
 
 # -----------------------------------------------------------------------------
 # configuration
@@ -48,6 +50,8 @@ class BrainstormRequest(BaseModel):
     prompt: str = Field(..., example="Ideas for reducing plastic waste")
     max_ideas: int = Field(5, ge=1, le=10)
     temperature: float = Field(0.8, ge=0.0, le=1.0)
+    mode: str = Field("untimed", example="untimed")  # untimed, lightning (90s), or deep_dive (180s)
+    personality: Optional[str] = Field(None, example="high_energy")  # high_energy, analytical, contrarian, empathetic, balanced
 
 class Idea(BaseModel):
     text: str
@@ -56,6 +60,10 @@ class Idea(BaseModel):
 
 class BrainstormResponse(BaseModel):
     ideas: List[Idea]
+    chosen_technique: Optional[str] = None
+    technique_description: Optional[str] = None
+    phase_end_at: Optional[str] = None
+    mode: str = "lightning"
 
 class IdeaQuestionRequest(BaseModel):
     question: str = Field(..., example="How can I implement this idea?")
@@ -127,11 +135,31 @@ async def health_check():
 async def brainstorm(request: BrainstormRequest):
     """Return a list of brainstormed ideas for the given prompt."""
     try:
+        # Determine personality/technique
+        personality = request.personality or "balanced"
+        technique_info = suggest_technique(personality)
+
+        # Calculate phase end time based on mode (None for untimed)
+        phase_end_at = None
+        if request.mode == "lightning":
+            phase_end_at = (datetime.utcnow() + timedelta(seconds=90)).isoformat() + "Z"
+        elif request.mode == "deep_dive":
+            phase_end_at = (datetime.utcnow() + timedelta(seconds=180)).isoformat() + "Z"
+        # untimed mode: phase_end_at remains None
+
         if USE_VERTEX:
             # placeholder for future Vertex AI integration
             raise NotImplementedError("Vertex AI call not yet implemented")
+
         ideas = generate_ideas_placeholder(request.prompt, request.max_ideas, request.temperature)
-        return {"ideas": ideas}
+
+        return {
+            "ideas": ideas,
+            "chosen_technique": technique_info["method"],
+            "technique_description": technique_info["description"],
+            "phase_end_at": phase_end_at,
+            "mode": request.mode
+        }
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
 
